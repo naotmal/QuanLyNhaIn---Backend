@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(cors(
     {
-        origin: ["http://localhost:3000", "https://vanytuong.com"],
+        origin: ["https://localhost:3000", "https://vanytuong.vercel.app"],
         credentials: true
     }
 ))
