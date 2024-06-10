@@ -1,51 +1,56 @@
-const mongoose = require ("mongoose")
-const taskSchema = mongoose.Schema(
-    {
-        name:{
-            type: String,
-            required: [true, "Please add a task"],
+const mongoose = require("mongoose");
 
-        },
-        completed:{
-            type: Boolean,
-            required: true,
-            default: false
-        },
-        sku: {
-            type: String,
-            required: true,
-            default: "SKU",
-            trim: true,
-        },
-        category: {
-            type: String,
-            required: [true, "Please add a category"],
-            trim: true,
-        },
-        quantity: {
-            type: String,
-            required: [true, "Please add a quantity"],
-            trim: true,
-        },
-        price: {
-            type: String,
-            required: [true, "Please add a price"],
-            trim: true,
-        },
-        description: {
-            type: String,
-            default: {}
-        },
-        image: {
-            type: Object,
-            default: {}
-        },
+const taskSchema = mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User",
+
     },
-    {
-        timestamps: true
-    }
+    
+    
+    
+    
+    name: {
+        type: String,
+        trim: [true, "Please add name"],
+        required: true,
+    },
+    progress: {
+        type: String,
+        enum: ["Not started", "To do", "Doing", "Deliver", "Done"],
+        default: "Not started",
+    },
+    quantity: {
+        type: String,
+        trim: [true, "Please add name"],
+        required: true,
+    },
+    unit: {
+        type: String,
+        enum: ["Box", "Set", "Volume", "Sheet"],
+        default: "Sheet",
+    },
+    description: {
+        type: String,
+        trim: [true, "Please add name"],
+        required: true,
+    },
+    clientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Client",
+    },
+    createAt:{
+        type: Date,
+        required: true,
+    
+    },
+    
+}, {
+    timestamps: true,
+}
 )
 
-const Task = mongoose.model("Task", taskSchema)
-
-module.exports = Task
+const Task = mongoose.model("Task", taskSchema);
+module.exports = Task;

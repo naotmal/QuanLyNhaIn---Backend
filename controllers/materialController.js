@@ -3,11 +3,12 @@ const Material = require("../models/materialModel")
 const {fileSizeFormat} = require("../utils/fileUpload")
 const cloudinary = require("cloudinary").v2;
 
+
 const createMaterial = asyncHandler (async(req, res)=>{
-    const {name, sku, category, quantity, price, description} = req.body
+    const {name, sku, category, description} = req.body
 
     //validation
-    if (!name || !category || !quantity || !price){
+    if (!name || !category){
         res.status(400)
         throw new Error("Please fill in all fields")
     }
@@ -36,8 +37,6 @@ const createMaterial = asyncHandler (async(req, res)=>{
         name, 
         sku,
         category,
-        price,
-        quantity,
         description,
         image: fileData
     })
@@ -82,9 +81,11 @@ const deleteMaterial = asyncHandler(async(req, res)=>{
     res.status(200).json({message: "Material deleted"})
 })
 
+
+
 //Update material
 const updateMaterial = asyncHandler (async(req, res)=>{
-    const {name, category, quantity, price, description} = req.body
+    const {name, category, description} = req.body
 const {id} = req.params
     const material = await Material.findById(id)
     if(!material){
@@ -96,6 +97,7 @@ const {id} = req.params
         res.status(400)
         throw new Error("User not authorized")
     }
+    
     //handle image upload
     let fileData = {}
     if (req.file){
@@ -114,14 +116,14 @@ const {id} = req.params
             fileSize: fileSizeFormat( req.file.size, 2),
         }
     }
+    
+    
     //update material
     const updatedMaterial = await Material.findByIdAndUpdate(
         {_id: id},
         {
             name, 
             category,
-            price,
-            quantity,
             description,
             image: Object.keys(fileData).length === 0 ? material?.image : fileData
         },
@@ -141,4 +143,5 @@ module.exports = {
     getMaterial,
     deleteMaterial,
     updateMaterial,
+  
 }

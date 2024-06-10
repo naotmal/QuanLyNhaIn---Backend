@@ -25,13 +25,8 @@ const materialSchema = mongoose.Schema({
     },
     quantity: {
         type: String,
-        required: [true, "Please add a quantity"],
         trim: true,
-    },
-    price: {
-        type: String,
-        required: [true, "Please add a price"],
-        trim: true,
+        default: '0'
     },
     description: {
         type: String,

@@ -8,7 +8,11 @@ const materialRoute = require("./routes/materialRoute")
 const errorHandler = require("./middleware/errorMiddleware")
 const cookieParser = require("cookie-parser")
 const path = require("path")
+const receiptRoute = require("./routes/receiptRoute")
 const taskRoute = require("./routes/taskRoute")
+const clientRoute = require("./routes/clientRoute")
+const deliveryRoute = require("./routes/deliveryRoute")
+
 
 const app = express();
 
@@ -19,7 +23,7 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(cors(
     {
-        origin: ["https://localhost:3000", "https://vanytuong.vercel.app"],
+        origin: ["http://localhost:3000", "https://vanytuong.vercel.app"],
         credentials: true
     }
 ))
@@ -29,7 +33,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 // Routes middleware
 app.use("/api/users", userRoute);
 app.use("/api/materials", materialRoute);
-app.use("/api/tasks", taskRoute)
+app.use("/api/receipt", receiptRoute);
+app.use("/api/tasks", taskRoute);
+app.use("/api/clients", clientRoute);
+app.use("/api/delivery", deliveryRoute);
+
 
 //Routes
 app.get("/", (req, res) => {
