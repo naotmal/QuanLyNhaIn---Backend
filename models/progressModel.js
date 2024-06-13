@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const taskSchema = mongoose.Schema({
+const progressSchema = mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -18,8 +18,8 @@ const taskSchema = mongoose.Schema({
     },
     progress: {
         type: String,
-        enum:['1','2','3','4'],
-        default: '1'
+        enum: ["Not started", "To do", "Doing", "Deliver", "Done"],
+        default: "Not started",
     },
     quantity: {
         type: String,
@@ -28,8 +28,8 @@ const taskSchema = mongoose.Schema({
     },
     unit: {
         type: String,
-        trim: [true, "Please add name"],
-        required: true,
+        enum: ["Box", "Set", "Volume", "Sheet"],
+        default: "Sheet",
     },
     description: {
         type: String,
@@ -52,5 +52,5 @@ const taskSchema = mongoose.Schema({
 }
 )
 
-const Task = mongoose.model("Task", taskSchema);
-module.exports = Task;
+const Progress = mongoose.model("Progress", progressSchema);
+module.exports = Progress;

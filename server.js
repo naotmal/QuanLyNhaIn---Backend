@@ -12,8 +12,6 @@ const receiptRoute = require("./routes/receiptRoute")
 const taskRoute = require("./routes/taskRoute")
 const clientRoute = require("./routes/clientRoute")
 const deliveryRoute = require("./routes/deliveryRoute")
-const fs = require('fs');
-const https = require('https');
 
 
 const app = express();
@@ -29,10 +27,7 @@ app.use(cors(
         credentials: true
     }
 ))
-const options = {
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-};
+
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 // Routes middleware
@@ -42,7 +37,6 @@ app.use("/api/receipt", receiptRoute);
 app.use("/api/tasks", taskRoute);
 app.use("/api/clients", clientRoute);
 app.use("/api/delivery", deliveryRoute);
-
 
 
 //Routes
@@ -55,25 +49,6 @@ app.use(errorHandler);
 
 //Connect to DB and start server
 const PORT = process.env.PORT || 5000;
-
-https.createServer(options, app).listen(443, () => {
-    console.log('HTTPS Server running on port 443');
-});
-
-const http = require('http');
-http.createServer((req, res) => {
-    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-    res.end();
-}).listen(80);
-
-const http = require('http');
-
-http.createServer((req, res) => {
-    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-    res.end();
-}).listen(80, () => {
-    console.log('Redirecting HTTP to HTTPS');
-});
 
 mongoose
     .connect(process.env.MONGO_URI)

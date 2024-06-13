@@ -52,7 +52,7 @@ const createReceipt = asyncHandler(async(req, res)=>{
     console.log(id);
 });
 
-
+//Get receipt by material
 const getReceipt = asyncHandler(async(req, res)=>{
     const receipt = await Receipt.find({materialId: req.params.id }).sort("-createdAt");
     if(!receipt){
@@ -63,15 +63,29 @@ const getReceipt = asyncHandler(async(req, res)=>{
     
     res.status(200).json(receipt)
 });
+//Get single receipt
+const getSingleReceipt = asyncHandler(async(req, res)=>{
+    const receipt = await Receipt.findById(req.params.id)
+    if(!receipt){
+        res.status(400)
+        throw new Error("Receipt not found")
+    }
+    if(receipt.user.toString()!== req.user.id){
+        res.status(400)
+        throw new Error("User not authorized")
+    }
+    res.status(200).json(receipt)
+})
 
 // Get all receipts
 const getReceipts = asyncHandler(async (req, res) => {
     const receipt = await Receipt.find({ user: req.user.id }).sort("-createdAt");
     res.status(200).json(receipt);
   });
-
+//delete receipt
 const deleteReceipt = asyncHandler(async(req, res)=>{
     const receipt = await Receipt.findById(req.params.id)
+    
     if(!receipt){
         res.status(400)
         throw new Error
@@ -92,7 +106,7 @@ const deleteReceipt = asyncHandler(async(req, res)=>{
     )
     res.status(200).json(deleteQuantity)
 });
-
+//updatereceipt
 const updateReceipt = asyncHandler(async(req, res)=>{
    const {materialId, quantity} = req.body
     
@@ -130,6 +144,8 @@ const updateReceipt = asyncHandler(async(req, res)=>{
 module.exports={
     createReceipt,
     getReceipt,
+    getReceipts,
     deleteReceipt,
     updateReceipt,
+    getSingleReceipt,
 }

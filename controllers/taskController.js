@@ -6,7 +6,7 @@ const createTask = asyncHandler (async(req, res)=>{
     const {name, progress, quantity, unit, clientId, description} = req.body
 
     //validation
-    if (!name|| !quantity || !clientId || !description){
+    if (!name|| !quantity || !description || !unit || !clientId){
         res.status(400)
         throw new Error("Please fill in all fields")
     }

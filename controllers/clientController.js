@@ -32,7 +32,7 @@ const getClient = asyncHandler(async(req, res)=>{
         throw new Error("Client not found")
 
     }
-    if(client.userId.toString() !== req.user.id){
+    if(client.user.toString() !== req.user.id){
         res.status(400)
         throw new Error("User not authorized")
     }
@@ -48,7 +48,7 @@ const deleteClient = asyncHandler(async(req, res)=>{
         throw new Error("Client not found")
 
     }
-    if(client.userId.toString() !== req.user.id){
+    if(client.user.toString() !== req.user.id){
         res.status(400)
         throw new Error("User not authorized")
     }
@@ -66,7 +66,7 @@ const {id} = req.params
         throw new Error("Client not found")
 
     }
-    if(client.userId.toString() !== req.user.id){
+    if(client.user.toString() !== req.user.id){
         res.status(400)
         throw new Error("User not authorized")
     }

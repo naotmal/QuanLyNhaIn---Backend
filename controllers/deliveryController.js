@@ -3,7 +3,7 @@ const Delivery = require("../models/deliveryModel")
 const Material = require("../models/materialModel")
 const Task = require("../models/taskModel")
 
-
+//Create delivery
 const createDelivery = asyncHandler (async(req, res)=>{
     const {materialId, taskId, quantity} = req.body
 
@@ -52,6 +52,8 @@ const createDelivery = asyncHandler (async(req, res)=>{
 
     res.status(200).json(updatedMaterial)
 });
+
+//Get delivery by task
 const getDelivery = asyncHandler(async(req, res)=>{
     const delivery = await Delivery.find({taskId: req.params.id }).sort("-createdAt");
     if(!delivery){
@@ -62,6 +64,13 @@ const getDelivery = asyncHandler(async(req, res)=>{
     
     res.status(200).json(delivery)
 });
+
+const getDeliveries = asyncHandler(async(req, res)=>{
+    const deliveries = await Delivery.find({user: req.user.id}).sort("-createAt")
+    res.status(200).json(deliveries)
+})
+
+//delete delivery
 const deleteDelivery = asyncHandler(async(req, res)=>{
     const delivery = await Delivery.findById(req.params.id)
     if(!delivery){
@@ -84,6 +93,8 @@ const deleteDelivery = asyncHandler(async(req, res)=>{
     )
     res.status(200).json(deleteQuantity)
 });
+
+//update delivery
 const updateDelivery = asyncHandler(async(req, res)=>{
     const {materialId, quantity} = req.body
      
@@ -123,4 +134,5 @@ module.exports={
     getDelivery,
     deleteDelivery,
     updateDelivery,
+    getDeliveries,
 }
