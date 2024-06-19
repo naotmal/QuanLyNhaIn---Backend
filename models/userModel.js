@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Please add a password"],
         minLength: [6, "Password must be up to 6 characters"],
+
         // maxLength: [23, "Password mus no be more than 23 characters"]
     },
     photo: {
@@ -31,14 +32,18 @@ const userSchema = mongoose.Schema({
         type: String,
         default: "+84"
     },
-    department: {
+    role: {
         type: String,
-        maxLength: [250, "Department must not be more than 250 characters"],
-        default: "Saleman"
+
+        default: "Admin",
+        enum: ['Admin', 'Sale', 'Product'],
     },
+
+
 
 }, {
     timestamps: true,
+    minimize: false,
 });
 
 // encrypt password before saving to database
@@ -50,6 +55,7 @@ userSchema.pre("save", async function (next) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(this.password, salt);
     this.password = hashedPassword;
+    next();
 })
 
 const User = mongoose.model("User", userSchema)

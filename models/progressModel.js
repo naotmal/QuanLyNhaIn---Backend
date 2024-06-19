@@ -1,16 +1,11 @@
 const mongoose = require("mongoose");
 
 const progressSchema = mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User",
 
-    },
-    
-    
-    
-    
+
+
+
+
     name: {
         type: String,
         trim: [true, "Please add name"],
@@ -41,12 +36,12 @@ const progressSchema = mongoose.Schema({
         required: true,
         ref: "Client",
     },
-    createAt:{
+    createAt: {
         type: Date,
         required: true,
-    
+
     },
-    
+
 }, {
     timestamps: true,
 }

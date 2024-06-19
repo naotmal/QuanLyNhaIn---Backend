@@ -1,16 +1,10 @@
 const mongoose = require("mongoose");
 
 const taskSchema = mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User",
 
-    },
-    
-    
-    
-    
+
+
+
     name: {
         type: String,
         trim: [true, "Please add name"],
@@ -18,7 +12,7 @@ const taskSchema = mongoose.Schema({
     },
     progress: {
         type: String,
-        enum:['1','2','3','4'],
+        enum: ['1', '2', '3', '4'],
         default: '1'
     },
     quantity: {
@@ -41,12 +35,12 @@ const taskSchema = mongoose.Schema({
         required: true,
         ref: "Client",
     },
-    createAt:{
+    createAt: {
         type: Date,
         required: true,
-    
+
     },
-    
+
 }, {
     timestamps: true,
 }

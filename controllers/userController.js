@@ -57,9 +57,9 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        const { _id, name, email, photo, phone, department } = user
+        const { _id, name, email, photo, phone, role } = user
         res.status(201).json({
-            _id, name, email, photo, phone, department, token,
+            _id, name, email, photo, phone, role, token
         })
     } else {
         res.status(400)
@@ -98,9 +98,9 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     if (user && passwordIsCorrect) {
-        const { _id, name, email, photo, phone, department } = user
+        const { _id, name, email, photo, phone, role } = user
         res.status(200).json({
-            _id, name, email, photo, phone, department, token,
+            _id, name, email, photo, phone, role, token
         })
     } else {
         res.status(400)
@@ -124,15 +124,25 @@ const logout = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id)
     if (user) {
-        const { _id, name, email, photo, phone, department } = user
+        const { _id, name, email, photo, phone, role } = user
         res.status(200).json({
-            _id, name, email, photo, phone, department,
+            _id, name, email, photo, phone, role
         })
     } else {
-        res.status(400);
+        res.status(404);
         throw new Error("User not found");
     }
 });
+
+//Get Users
+const getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find().sort({ role: 1, name: 1 }).select("-password")
+    if (!users) {
+        res.status(500)
+        throw new Error("User not found");
+    }
+    res.status(200).json(users)
+})
 
 //Get login status
 const loginStatus = asyncHandler(async (req, res) => {
@@ -154,12 +164,12 @@ const loginStatus = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id)
     if (user) {
-        const { name, email, photo, phone, department } = user;
-        user.email = email;
+        const { name, email, photo, phone, role } = user;
+        user.email = email
         user.name = req.body.name || name;
         user.phone = req.body.phone || phone;
         user.photo = req.body.photo || photo;
-        user.department = req.body.department || department;
+
 
         const updatedUser = await user.save()
         res.status(200).json({
@@ -168,7 +178,8 @@ const updateUser = asyncHandler(async (req, res) => {
             email: updatedUser.email,
             photo: updatedUser.photo,
             phone: updatedUser.phone,
-            department: updatedUser.department,
+            role: updatedUser.role,
+
 
         })
     } else {
@@ -176,6 +187,35 @@ const updateUser = asyncHandler(async (req, res) => {
         throw new Error("User not found")
     }
 });
+//upgrade user
+const upgradeUser = asyncHandler(async (req, res) => {
+    const { role, id } = req.body
+    const user = await User.findById(id)
+    if (!user) {
+        res.status(500)
+        throw new Error("User not found");
+    }
+
+    user.role = role
+    await user.save()
+    res.status(200).json({
+        message: `User role updated to ${role}`
+    })
+})
+//delete user
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = User.findById(req.params.id)
+
+    if (!user) {
+        res.status(400)
+        throw new Error("User not found");
+
+    }
+    await user.deleteOne()
+    res.status(200).json({
+        message: "User deleted successfully"
+    })
+})
 
 //Update password
 const updatePassword = asyncHandler(async (req, res) => {
@@ -284,4 +324,7 @@ module.exports = {
     updatePassword,
     forgotPassword,
     resetPassword,
+    deleteUser,
+    getUsers,
+    upgradeUser,
 }

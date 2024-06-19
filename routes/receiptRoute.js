@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 
-const protect = require("../middleware/authMiddleware");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 const { createReceipt, getReceipt, deleteReceipt, updateReceipt, getReceipts, getSingleReceipt } = require("../controllers/receiptController");
 
 
 
-router.post("/:id", protect, createReceipt)
-router.get("/:id", protect, getReceipt)
-router.get("/single/:id", protect, getSingleReceipt)
-router.get("/", protect, getReceipts)
-router.delete("/:id", protect, deleteReceipt)
-router.patch("/:id", protect, updateReceipt)
+router.post("/:id", protect, adminOnly, createReceipt)
+router.get("/:id", protect, adminOnly, getReceipt)
+router.get("/single/:id", protect, adminOnly, getSingleReceipt)
+router.get("/", protect, adminOnly, getReceipts)
+router.delete("/:id", protect, adminOnly, deleteReceipt)
+router.patch("/:id", protect, adminOnly, updateReceipt)
 
 
 

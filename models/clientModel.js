@@ -2,11 +2,6 @@ const mongoose = require("mongoose")
 
 
 const clientSchema = mongoose.Schema({
-    user:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User",
-    },
     name: {
         type: String,
         required: [true, "Please add a name"],
@@ -21,8 +16,8 @@ const clientSchema = mongoose.Schema({
             "Please enter a valid email"
         ]
     },
-    
-    
+
+
     phone: {
         type: String,
         default: "+84"

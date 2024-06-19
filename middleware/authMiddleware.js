@@ -17,6 +17,7 @@ const protect = asyncHandler(async (req, res, next) => {
             res.status(401)
             throw new Error("User not found")
         }
+
         req.user = user
         next()
     } catch (error) {
@@ -25,4 +26,38 @@ const protect = asyncHandler(async (req, res, next) => {
     }
 })
 
-module.exports= protect
+const adminOnly = asyncHandler(async (req, res, next) => {
+    if (req.user && req.user.role === "Admin") {
+        next()
+    } else {
+        res.status(401);
+        throw new Error("Not authorized as an admin")
+    }
+})
+
+const saleOnly = asyncHandler(async (req, res, next) => {
+    if (req.user.role === "Sale" || req.user.role === "Admin") {
+        next()
+    } else {
+        res.status(401);
+        throw new Error("Not authorized as a Sale")
+    }
+})
+
+const productOnly = asyncHandler(async (req, res, next) => {
+    if (req.user.role === "Sale" || req.user.role === "Admin" || req.user.role === "Product") {
+        next()
+    } else {
+        res.status(401);
+        throw new Error("Not authorized as a Product")
+    }
+})
+
+
+
+module.exports = {
+    protect,
+    adminOnly,
+    saleOnly,
+    productOnly,
+}
