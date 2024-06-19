@@ -24,7 +24,8 @@ app.use(cookieParser())
 app.use(cors(
     {
         origin: ["http://localhost:3000", "https://vanytuong.vercel.app"],
-        credentials: true
+        credentials: true,
+        methods:["GET", "POST", "PUT", "DELETE", "PATCH"]
     }
 ))
 
