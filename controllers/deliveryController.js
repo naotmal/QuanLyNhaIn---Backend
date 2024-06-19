@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Delivery = require("../models/deliveryModel")
 const Material = require("../models/materialModel")
-const Task = require("../models/taskModel")
+const Task = require("../models/taskModel");
+const Receipt = require("../models/receiptModel");
 
 //Create delivery
 const createDelivery = asyncHandler(async (req, res) => {
@@ -29,12 +30,15 @@ const createDelivery = asyncHandler(async (req, res) => {
 
     }
 
+    const totalPrice = await calculatePrice(materialId, quantity)
+
     //Create delivery
     await new Delivery({
 
         materialId,
         taskId: taskId,
         quantity,
+        wholePrice: parseInt(totalPrice),
         createAt: Date.now(),
     }).save()
     res.status(200).json({
@@ -163,6 +167,53 @@ const updateDelivery = asyncHandler(async (req, res) => {
     res.status(200).json(deleteQuantity)
 })
 
+const calculatePrice = async (materialId, deliveryQuantity) => {
+    try {
+      // Fetch all receipts for the given materialId
+      const receipts = await Receipt.find({ materialId }).sort({ createAt: 'asc' });
+  
+      if (!receipts.length) {
+        throw new Error("No receipts found for the given material ID");
+      }
+  
+      let totalPrice = 0;
+      let remainingQuantity = deliveryQuantity;
+  
+      for (let receipt of receipts) {
+        if (remainingQuantity <= 0) break;
+  
+        const receiptQuantity = parseFloat(receipt.quantity);
+        const receiptPrice = parseFloat(receipt.price);
+        console.log(`Receipt ID: ${receipt._id}, Quantity: ${receipt.quantity}, Price: ${receipt.price}`);
+      console.log(`Parsed Quantity: ${receiptQuantity}, Parsed Price: ${receiptPrice}`);
+        if (isNaN(receiptQuantity) || isNaN(receiptPrice)) {
+            throw new Error("Invalid receipt quantity or price");
+          }
+        if (remainingQuantity <= receiptQuantity) {
+          totalPrice += remainingQuantity * receiptPrice;
+          remainingQuantity = 0;
+        } else {
+          totalPrice += receiptQuantity * receiptPrice;
+          remainingQuantity -= receiptQuantity;
+        }
+      }
+  
+      if (remainingQuantity > 0) {
+        // Assume the last receipt's price for the remaining quantity
+        const lastReceiptPrice = parseFloat(receipts[receipts.length - 1].price);
+        if (isNaN(lastReceiptPrice)) {
+            throw new Error("Invalid last receipt price");
+          }
+        totalPrice += remainingQuantity * lastReceiptPrice;
+      }
+  
+      return parseFloat(totalPrice.toFixed(2));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
 module.exports = {
     createDelivery,
     getDeliverybyTask,
@@ -171,4 +222,5 @@ module.exports = {
     updateDelivery,
     getDeliveries,
     getSingleDelivery,
+    calculatePrice,
 }
