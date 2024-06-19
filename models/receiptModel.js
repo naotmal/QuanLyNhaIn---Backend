@@ -13,15 +13,11 @@ const receiptSchema = mongoose.Schema({
 
 
     quantity: {
-        type: String,
+        type: Number,
         required: [true, "Please add quantity"],
         trim: true,
     },
-    wholePrice:{
-        type: Number,
-        required: [true, "Please add price"],
-        trime: true,
-    },
+    
     createAt: {
         type: Date,
         required: true,

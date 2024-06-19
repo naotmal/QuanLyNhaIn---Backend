@@ -12,6 +12,8 @@ const receiptRoute = require("./routes/receiptRoute");
 const taskRoute = require("./routes/taskRoute");
 const clientRoute = require("./routes/clientRoute");
 const deliveryRoute = require("./routes/deliveryRoute");
+const jobRoute = require("./routes/jobRoute")
+const dojobRoute = require("./routes/dojobRoute")
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use("/api/receipt", receiptRoute);
 app.use("/api/tasks", taskRoute);
 app.use("/api/clients", clientRoute);
 app.use("/api/delivery", deliveryRoute);
+app.use("/api/job", jobRoute)
+app.use("/api/dojob", dojobRoute)
 
 // Home route
 app.get("/", (req, res) => {

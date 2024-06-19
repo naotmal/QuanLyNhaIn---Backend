@@ -19,15 +19,16 @@ const deliverySchema = mongoose.Schema({
 
 
     quantity: {
-        type: String,
+        type: Number,
         trim: [true, "Please add name"],
         required: true,
     },
-    wholePrice:{
-        type: String,
-        required: [true, "Please add price"],
-        trime: true,
+    price: {
+        type: Number,
+        
+        default: 0,
     },
+    
 
     createAt: {
         type: Date,

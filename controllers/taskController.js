@@ -71,20 +71,26 @@ const deleteTask = asyncHandler(async (req, res) => {
 
     }
 
-    const delivery = await Delivery.findOne({ taskId: req.params.id })
-    const material = await Material.findById(delivery.materialId)
-    const deleteQuantity = await Material.findByIdAndUpdate(
-        { _id: material._id },
-        {
-            quantity: parseInt(material.quantity) + parseInt(delivery.quantity),
-        },
-        {
-            new: true,
-            runValidators: true
-        }
-    )
-    res.status(200).json(deleteQuantity)
-    await delivery.deleteOne()
+    const deliveries = await Delivery.find({ taskId: req.params.id })
+    if (deliveries && deliveries.length > 0) {
+        for (const delivery of deliveries){
+            const material = await Material.findById(delivery.materialId)
+            if(material){
+                await Material.findByIdAndUpdate(
+                    { _id: material._id },
+                    {
+                        quantity: parseInt(material.quantity) + parseInt(delivery.quantity),
+                    },
+                    {
+                        new: true,
+                        runValidators: true
+                    }
+                )
+            }}
+    }
+    
+   
+    await Delivery.deleteMany({ taskId: req.params.id });
     await task.deleteOne()
     res.status(200).json({ message: "Task deleted" })
 });
@@ -133,6 +139,8 @@ const changeProgress = asyncHandler(async (req, res) => {
     })
 })
 
+
+
 module.exports = {
     createTask,
     getTasks,
@@ -141,5 +149,6 @@ module.exports = {
     updateTask,
     getTaskbyClient,
     changeProgress,
+   
 
 }

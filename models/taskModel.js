@@ -16,9 +16,14 @@ const taskSchema = mongoose.Schema({
         default: '1'
     },
     quantity: {
-        type: String,
+        type: Number,
         trim: [true, "Please add name"],
         required: true,
+    },
+    price:{
+        type: Number,
+        trim: true,
+        default: '0'
     },
     unit: {
         type: String,

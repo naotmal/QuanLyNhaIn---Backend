@@ -1,14 +1,15 @@
 const asyncHandler = require("express-async-handler");
 const Material = require("../models/materialModel")
-const { fileSizeFormat } = require("../utils/fileUpload")
+const { fileSizeFormat } = require("../utils/fileUpload");
+const Receipt = require("../models/receiptModel");
 const cloudinary = require("cloudinary").v2;
 
 
 const createMaterial = asyncHandler(async (req, res) => {
-    const { name, sku, category, description } = req.body
+    const { name, sku, category, description, price } = req.body
 
     //validation
-    if (!name || !category) {
+    if (!name || !category || !price) {
         res.status(400)
         throw new Error("Please fill in all fields")
     }
@@ -33,10 +34,10 @@ const createMaterial = asyncHandler(async (req, res) => {
     }
     //Create material
     const material = await Material.create({
-        user: req.user.id,
         name,
         sku,
         category,
+        price,
         description,
         image: fileData
     })
@@ -70,16 +71,17 @@ const deleteMaterial = asyncHandler(async (req, res) => {
         throw new Error("Material not found")
 
     }
+await Receipt.deleteMany({materialId: req.params.id})
 
-    await material.deleteOne()
-    res.status(200).json({ message: "Material deleted" })
+await material.deleteOne()
+res.status(200).json({message: "Material deleted successfully"})
 })
 
 
 
 //Update material
 const updateMaterial = asyncHandler(async (req, res) => {
-    const { name, category, description } = req.body
+    const { name, category, description, price } = req.body
     const { id } = req.params
     const material = await Material.findById(id)
     if (!material) {
@@ -114,6 +116,7 @@ const updateMaterial = asyncHandler(async (req, res) => {
         {
             name,
             category,
+            price,
             description,
             image: Object.keys(fileData).length === 0 ? material?.image : fileData
         },

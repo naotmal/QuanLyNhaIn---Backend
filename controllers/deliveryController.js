@@ -3,6 +3,7 @@ const Delivery = require("../models/deliveryModel")
 const Material = require("../models/materialModel")
 const Task = require("../models/taskModel");
 const Receipt = require("../models/receiptModel");
+const DoJob = require("../models/dojobModel");
 
 //Create delivery
 const createDelivery = asyncHandler(async (req, res) => {
@@ -16,7 +17,6 @@ const createDelivery = asyncHandler(async (req, res) => {
     }
     const material = await Material.findById(materialId)
     const task = await Task.findById(taskId)
-    console.log("taskId:", taskId);
 
     if (!material) {
         res.status(400)
@@ -29,21 +29,28 @@ const createDelivery = asyncHandler(async (req, res) => {
         throw new Error("Task not found")
 
     }
-
-    const totalPrice = await calculatePrice(materialId, quantity)
-
+   
+    const price = parseInt(material.price) * parseInt(quantity);
     //Create delivery
-    await new Delivery({
+    const newDelivery = await new Delivery({
 
         materialId,
         taskId: taskId,
         quantity,
-        wholePrice: parseInt(totalPrice),
+        price,
         createAt: Date.now(),
     }).save()
-    res.status(200).json({
-        message: "New delivery created"
-    })
+    
+    const taskPrice = await Task.findByIdAndUpdate(
+        {_id: taskId},
+        {
+            price: parseInt(task.price) + parseInt(price)
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
     const subtractQuantity = await Material.findByIdAndUpdate(
         { _id: material._id },
         {
@@ -55,7 +62,12 @@ const createDelivery = asyncHandler(async (req, res) => {
         }
     )
 
-    res.status(200).json(updatedMaterial)
+    res.status(200).json({
+        newDelivery,
+        taskPrice,
+        subtractQuantity,
+        
+    })
 });
 
 //Get delivery by task
@@ -102,7 +114,7 @@ const getSingleDelivery = asyncHandler(async (req, res) => {
 
 //get all deliveries
 const getDeliveries = asyncHandler(async (req, res) => {
-    const deliveries = await Delivery.find({ userId: req.user.id }).sort("-createAt")
+    const deliveries = await Delivery.find().sort("-createAt")
     res.status(200).json(deliveries)
 })
 
@@ -110,14 +122,37 @@ const getDeliveries = asyncHandler(async (req, res) => {
 //delete delivery
 const deleteDelivery = asyncHandler(async (req, res) => {
     const delivery = await Delivery.findById(req.params.id)
+    const task = await Task.findById(delivery.taskId)
     if (!delivery) {
         res.status(400)
-        throw new Error
+        throw new Error("Delivery not found")
+    }
+    if (!task) {
+        res.status(400)
+        throw new Error("Delivery not found")
     }
 
-    await delivery.deleteOne()
-    res.status(200).json({ message: "Delivery deleted" })
     const material = await Material.findById(delivery.materialId)
+    if (!material) {
+        res.status(400);
+        throw new Error("Material not found");
+    }
+
+    const priceToSubtract = parseInt(delivery.price);
+    await DoJob.deleteMany({deliveryId: req.params.id})
+    await delivery.deleteOne()
+    
+    const taskPrice = await Task.findByIdAndUpdate(
+        {_id: task._id},
+        {
+            price: parseInt(task.price) - parseInt(priceToSubtract)
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
+    
     const deleteQuantity = await Material.findByIdAndUpdate(
         { _id: material._id },
         {
@@ -128,7 +163,11 @@ const deleteDelivery = asyncHandler(async (req, res) => {
             runValidators: true
         }
     )
-    res.status(200).json(deleteQuantity)
+    res.status(200).json({
+        message: "Delivery deleted",
+        updatedTask,
+        updatedMaterial,
+    });
 });
 
 //update delivery
@@ -141,10 +180,26 @@ const updateDelivery = asyncHandler(async (req, res) => {
         throw new Error("Delivery not found")
     }
 
+    const material = await Material.findById(delivery.materialId)
+    if (!material) {
+        res.status(400);
+        throw new Error("Material not found");
+    }
+
+    const task = await Task.findById(delivery.taskId);
+    if (!task) {
+        res.status(400);
+        throw new Error("Task not found");
+    }
+
+    const oldPrice = parseInt(delivery.price);
+    const newPrice = parseInt(material.price) * parseInt(quantity);
+    const priceDifference = newPrice - oldPrice;
     const updateDelivery = await Delivery.findByIdAndUpdate(
         { _id: req.params.id },
         {
             quantity,
+            price: newPrice,
 
         },
         {
@@ -152,8 +207,8 @@ const updateDelivery = asyncHandler(async (req, res) => {
             runValidators: true
         }
     )
-    res.status(200).json(updateDelivery)
-    const material = await Material.findById(delivery.materialId)
+    
+    
     const deleteQuantity = await Material.findByIdAndUpdate(
         { _id: material._id },
         {
@@ -164,55 +219,27 @@ const updateDelivery = asyncHandler(async (req, res) => {
             runValidators: true
         }
     )
-    res.status(200).json(deleteQuantity)
+
+    const taskPrice = await Task.findByIdAndUpdate(
+        {_id: task._id},
+        {
+            price: parseInt(task.price) + priceDifference,
+        }
+        ,
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
+    res.status(200).json({
+        message: "Delivery updated successfully",
+        updatedDelivery,
+        updatedMaterial,
+        updatedTask,
+    });
 })
 
-const calculatePrice = async (materialId, deliveryQuantity) => {
-    try {
-      // Fetch all receipts for the given materialId
-      const receipts = await Receipt.find({ materialId }).sort({ createAt: 'asc' });
-  
-      if (!receipts.length) {
-        throw new Error("No receipts found for the given material ID");
-      }
-  
-      let totalPrice = 0;
-      let remainingQuantity = deliveryQuantity;
-  
-      for (let receipt of receipts) {
-        if (remainingQuantity <= 0) break;
-  
-        const receiptQuantity = parseFloat(receipt.quantity);
-        const receiptPrice = parseFloat(receipt.price);
-        console.log(`Receipt ID: ${receipt._id}, Quantity: ${receipt.quantity}, Price: ${receipt.price}`);
-      console.log(`Parsed Quantity: ${receiptQuantity}, Parsed Price: ${receiptPrice}`);
-        if (isNaN(receiptQuantity) || isNaN(receiptPrice)) {
-            throw new Error("Invalid receipt quantity or price");
-          }
-        if (remainingQuantity <= receiptQuantity) {
-          totalPrice += remainingQuantity * receiptPrice;
-          remainingQuantity = 0;
-        } else {
-          totalPrice += receiptQuantity * receiptPrice;
-          remainingQuantity -= receiptQuantity;
-        }
-      }
-  
-      if (remainingQuantity > 0) {
-        // Assume the last receipt's price for the remaining quantity
-        const lastReceiptPrice = parseFloat(receipts[receipts.length - 1].price);
-        if (isNaN(lastReceiptPrice)) {
-            throw new Error("Invalid last receipt price");
-          }
-        totalPrice += remainingQuantity * lastReceiptPrice;
-      }
-  
-      return parseFloat(totalPrice.toFixed(2));
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
+
 
 module.exports = {
     createDelivery,
@@ -222,5 +249,5 @@ module.exports = {
     updateDelivery,
     getDeliveries,
     getSingleDelivery,
-    calculatePrice,
+   
 }

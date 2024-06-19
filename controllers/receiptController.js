@@ -8,11 +8,11 @@ const Receipt = require("../models/receiptModel")
 
 
 const createReceipt = asyncHandler(async (req, res) => {
-    const { quantity, wholePrice } = req.body
+    const { quantity } = req.body
     const { id } = req.params
     const material = await Material.findById(id)
     //validation
-    if (!quantity || !wholePrice) {
+    if (!quantity ) {
         res.status(400)
         throw new Error("Please fill in all fields")
     }
@@ -30,7 +30,7 @@ const createReceipt = asyncHandler(async (req, res) => {
 
         materialId: id,
         quantity,
-        wholePrice,
+        
         createAt: Date.now(),
     })
     res.status(201).json(receipt)

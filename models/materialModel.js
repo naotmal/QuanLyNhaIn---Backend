@@ -19,7 +19,12 @@ const materialSchema = mongoose.Schema({
         trim: true,
     },
     quantity: {
-        type: String,
+        type: Number,
+        trim: true,
+        default: '0'
+    },
+    price: {
+        type: Number,
         trim: true,
         default: '0'
     },
