@@ -23,35 +23,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// // CORS Middleware
-// app.use(cors({
-//     origin: ["http://localhost:3000", "https://vanytuong.vercel.app", "https://vanytuong.com"],
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
-// }));
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    }
-    // Log the request origin for debugging
-    console.log(`Request from origin: ${origin}`);
-    next();
-});
-
-
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true }));
+// CORS Middleware
+app.use(cors({
+    origin: ["http://localhost:3000", "https://vanytuong.vercel.app", "https://vanytuong.com"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+}));
 
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.options('*', (req, res) => {
-    res.sendStatus(204);
-});
 // Routes middleware
 app.use("/api/users", userRoute);
 app.use("/api/materials", materialRoute);
