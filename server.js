@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 // CORS Middleware
 app.use(cors({
-    origin: ["http://localhost:3000", "https://vanytuong.vercel.app", "https://vanytuong.com"],
+    origin: ["http://localhost:3000", "https://vanytuong.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
 }));
