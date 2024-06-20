@@ -16,6 +16,11 @@ const jobRoute = require("./routes/jobRoute")
 const dojobRoute = require("./routes/dojobRoute")
 
 const app = express();
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://vanytuong.vercel.app",
+    "https://vanytuong.com"
+];
 
 // Middlewares
 app.use(express.json());
@@ -25,7 +30,7 @@ app.use(cookieParser());
 
 // CORS Middleware
 app.use(cors({
-    origin: ["http://localhost:3000", "https://vanytuong.com"],
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
 }));
