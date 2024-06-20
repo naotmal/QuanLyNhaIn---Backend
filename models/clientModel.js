@@ -9,7 +9,7 @@ const clientSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "Please add a email"],
+       
         trim: true,
         match: [
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -24,7 +24,7 @@ const clientSchema = mongoose.Schema({
     },
     address: {
         type: String,
-        required: [true, "Please add address"]
+        
     },
 
 }, {

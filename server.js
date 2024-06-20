@@ -30,6 +30,9 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
 }));
 
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true }));
+
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
