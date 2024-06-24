@@ -18,7 +18,7 @@ const dojobRoute = require("./routes/dojobRoute")
 const app = express();
 const allowedOrigins = [
     "http://localhost:3000",
-    "https://vanytuong.vercel.app",
+    
     "https://vanytuong.com"
 ];
 
