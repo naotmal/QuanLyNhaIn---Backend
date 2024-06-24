@@ -31,7 +31,7 @@ const adminOnly = asyncHandler(async (req, res, next) => {
         next()
     } else {
         res.status(401);
-        throw new Error("Not authorized as an admin")
+        // throw new Error("Not authorized as an admin")
     }
 })
 
@@ -40,7 +40,7 @@ const saleOnly = asyncHandler(async (req, res, next) => {
         next()
     } else {
         res.status(401);
-        throw new Error("Not authorized as a Sale")
+        // throw new Error("Not authorized as a Sale")
     }
 })
 
@@ -49,7 +49,7 @@ const productOnly = asyncHandler(async (req, res, next) => {
         next()
     } else {
         res.status(401);
-        throw new Error("Not authorized as a Product")
+        // throw new Error("Not authorized as a Product")
     }
 })
 

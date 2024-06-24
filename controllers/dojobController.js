@@ -76,6 +76,24 @@ const getDoJobbyDelivery = asyncHandler(async (req, res) => {
     res.status(200).json(dojob)
 });
 
+//Get do job by task
+const getDoJobbyTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+
+    
+     const delivery = await Delivery.find({taskId: taskId})
+
+     const dojob = await DoJob.find({deliveryId: { $in: delivery.map(d => d._id) }})
+     
+     if (!dojob) {
+         res.status(400)
+         throw new Error("No job found")
+     }
+
+
+    res.status(200).json(dojob)
+});
+
 //Get single do job
 const getSingleDoJob = asyncHandler(async (req, res)=>{
     const dojob = await DoJob.findById(req.params.id)
@@ -189,4 +207,5 @@ module.exports={
     getSingleDoJob,
     deleteDoJob,
     updateDoJob,
+    getDoJobbyTask,
 }

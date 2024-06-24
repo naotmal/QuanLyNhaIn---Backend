@@ -32,8 +32,7 @@ const taskSchema = mongoose.Schema({
     },
     description: {
         type: String,
-        trim: [true, "Please add name"],
-        required: true,
+        default: ""
     },
     clientId: {
         type: mongoose.Schema.Types.ObjectId,

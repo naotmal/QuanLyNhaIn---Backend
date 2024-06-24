@@ -138,9 +138,16 @@ const deleteDelivery = asyncHandler(async (req, res) => {
         throw new Error("Material not found");
     }
 
-    const priceToSubtract = parseInt(delivery.price);
+    const dojobs = await DoJob.find({deliveryId: req.params.id})
+    let totalDoJobPrice = 0
+    dojobs.forEach(dojob => {
+        totalDoJobPrice += parseInt(dojob.price)
+    })
     await DoJob.deleteMany({deliveryId: req.params.id})
-    await delivery.deleteOne()
+
+    const priceToSubtract = parseInt(delivery.price) + totalDoJobPrice;
+    await DoJob.deleteMany({deliveryId: req.params.id})
+    
     
     const taskPrice = await Task.findByIdAndUpdate(
         {_id: task._id},
@@ -163,6 +170,7 @@ const deleteDelivery = asyncHandler(async (req, res) => {
             runValidators: true
         }
     )
+    await delivery.deleteOne()
     res.status(200).json({
         message: "Delivery deleted",
         updatedTask,
