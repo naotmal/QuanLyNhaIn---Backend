@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Client = require("../models/clientModel")
 
 const createClient = asyncHandler(async (req, res) => {
-    const { name, email, phone, address } = req.body
+    const { name, email,sku, phone, address } = req.body
 
     //validation
     if (!name  || !phone ) {
@@ -12,7 +12,7 @@ const createClient = asyncHandler(async (req, res) => {
     //Create client
     const client = await Client.create({
 
-        name, email, phone, address,
+        name, email, phone, address, sku
     });
 
     res.status(201).json(client)

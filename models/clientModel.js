@@ -16,8 +16,12 @@ const clientSchema = mongoose.Schema({
             "Please enter a valid email"
         ]
     },
-
-
+    sku: {
+        type: String,
+        required: true,
+        default: "SKU",
+        trim: true,
+    },
     phone: {
         type: String,
         default: "+84"

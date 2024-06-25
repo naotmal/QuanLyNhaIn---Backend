@@ -5,7 +5,7 @@ const Delivery = require("../models/deliveryModel");
 const Material = require("../models/materialModel");
 
 const createTask = asyncHandler(async (req, res) => {
-    const { name, progress, quantity, unit, clientId, description } = req.body
+    const { name, progress, priority, quantity, unit, clientId, description } = req.body
 
     //validation
     if (!name || !quantity || !unit || !clientId) {
@@ -17,6 +17,7 @@ const createTask = asyncHandler(async (req, res) => {
 
         name,
         progress,
+        priority,
         quantity,
         unit,
         clientId,
@@ -28,7 +29,7 @@ const createTask = asyncHandler(async (req, res) => {
 });
 // Get all Tasks
 const getTasks = asyncHandler(async (req, res) => {
-    const tasks = await Task.find().sort({ progress: 1, createdAt: -1 });
+    const tasks = await Task.find().sort({ progress: 1, priority: 1, createdAt: -1 });
     res.status(200).json(tasks);
 });
 
@@ -50,7 +51,7 @@ const getTaskbyClient = asyncHandler(async (req, res) => {
     const { clientId } = req.params;
     console.log(clientId);
 
-    const task = await Task.find({ clientId: clientId }).sort("-createdAt");
+    const task = await Task.find({ clientId: clientId }).sort({createdAt: -1});
     console.log(task);
     if (!task) {
         res.status(400)
@@ -97,7 +98,7 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 //Update task
 const updateTask = asyncHandler(async (req, res) => {
-    const { name, progress, quantity, unit, clientId, description } = req.body
+    const { name, progress,priority, quantity, unit, clientId, description } = req.body
     const { id } = req.params
     const task = await Task.findById(id)
     if (!task) {
@@ -112,7 +113,7 @@ const updateTask = asyncHandler(async (req, res) => {
     const updatedTask = await Task.findByIdAndUpdate(
         { _id: id },
         {
-            name, progress, quantity, unit, clientId, description,
+            name, progress, priority, quantity, unit, clientId, description,
         },
         {
             new: true,

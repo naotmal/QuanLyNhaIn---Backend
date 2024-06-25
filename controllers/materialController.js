@@ -47,7 +47,7 @@ const createMaterial = asyncHandler(async (req, res) => {
 
 // Get all Materials
 const getMaterials = asyncHandler(async (req, res) => {
-    const materials = await Material.find().sort({ name: 1, createdAt: -1 });
+    const materials = await Material.find().sort({quantity: 1, name: 1  });
     res.status(200).json(materials);
 });
 
