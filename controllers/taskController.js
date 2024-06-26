@@ -67,11 +67,8 @@ const getTaskbySKU = asyncHandler(async (req, res) => {
     const { sku } = req.params;
     console.log(sku);
 
-    const client = await Client.find({sku: sku})
-    if (!client) {
-        res.status(400);
-        throw new Error('Client not found');
-    }
+    const client = await Client.findOne({sku: sku})
+    
     const task = await Task.find({ clientId: client._id }).sort({createdAt: -1});
     console.log(task);
     if (!task) {

@@ -37,6 +37,20 @@ const getClient = asyncHandler(async (req, res) => {
     res.status(200).json(client)
 });
 
+//Get single client by sku
+const getClientSKU = asyncHandler(async (req, res) => {
+    const { sku } = req.params;
+    const client = await Client.find({sku: sku})
+    if (!client) {
+        res.status(400)
+        throw new Error("Client not found")
+
+    }
+
+
+    res.status(200).json(client)
+});
+
 //Delete client
 const deleteClient = asyncHandler(async (req, res) => {
     const client = await Client.findById(req.params.id)
@@ -85,4 +99,5 @@ module.exports = {
     getClient,
     deleteClient,
     updateClient,
+    getClientSKU,
 }
