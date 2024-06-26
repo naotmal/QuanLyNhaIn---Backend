@@ -62,6 +62,28 @@ const getTaskbyClient = asyncHandler(async (req, res) => {
     res.status(200).json(task)
 });
 
+//get task by sku
+const getTaskbySKU = asyncHandler(async (req, res) => {
+    const { sku } = req.params;
+    console.log(sku);
+
+    const client = await Client.find({sku: sku})
+    if (!client) {
+        res.status(400);
+        throw new Error('Client not found');
+    }
+    const task = await Task.find({ clientId: client._id }).sort({createdAt: -1});
+    console.log(task);
+    if (!task) {
+        res.status(400)
+        throw new Error("Task not found")
+    }
+
+
+    res.status(200).json(task)
+});
+
+
 
 //Delete task
 const deleteTask = asyncHandler(async (req, res) => {
@@ -150,6 +172,6 @@ module.exports = {
     updateTask,
     getTaskbyClient,
     changeProgress,
-   
+    getTaskbySKU,
 
 }

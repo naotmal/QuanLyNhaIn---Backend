@@ -15,6 +15,7 @@ const deliveryRoute = require("./routes/deliveryRoute");
 const jobRoute = require("./routes/jobRoute")
 const dojobRoute = require("./routes/dojobRoute")
 
+
 const app = express();
 const allowedOrigins = [
     "http://localhost:3000",
@@ -48,10 +49,6 @@ app.use("/api/delivery", deliveryRoute);
 app.use("/api/job", jobRoute)
 app.use("/api/dojob", dojobRoute)
 
-// Home route
-app.get("/", (req, res) => {
-    res.send("Home page");
-});
 
 // Error middleware
 app.use(errorHandler);
